@@ -2,3 +2,6 @@
 */__pycache__/
 *.py[cod]
 *$py.class
+dist/
+build/
+py621_Bugadinho.egg-info/

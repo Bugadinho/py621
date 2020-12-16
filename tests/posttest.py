@@ -1,10 +1,10 @@
-import py621
-
+from py621.public import Posts
 
 tags = ["protogen", "anthro"]
 
 # Get a list of safe posts with the tags contained in the above list and don't check for tag validity
-SamplePosts = py621.public.getPosts(True, tags, 10, 1, False)
+posts = Posts(True, tags, 10, 1, False)
+SamplePosts = posts.getPosts()
 
 SamplePost = SamplePosts[0] # Select the first post from the list
 

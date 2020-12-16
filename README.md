@@ -4,6 +4,8 @@ A simple, easy to use, e621 API interface for Python!
 
 ## Todos
 
+- Use objects for posts and pools
+
 - Expand the Public API
 
 - Add the Private API

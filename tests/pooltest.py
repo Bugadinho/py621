@@ -1,8 +1,7 @@
-from py621.public import Pool
+import py621
 
-# Get a list of not safe for work posts from the pool 6527
-pooltest = Pool(False, 6527)
-SamplePosts = pooltest.getPoolPosts()
+# Get a list of unsafe posts from the pool 6527
+SamplePosts = py621.public.getPoolPosts(False, 6527)
 
 SamplePost = SamplePosts[0] # Select the first post from the pool
 

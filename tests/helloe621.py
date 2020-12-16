@@ -9,7 +9,7 @@ SamplePosts = py621.public.getPosts(True, tags, 10, 1, False)
 SamplePost = SamplePosts[0] # Select the first post from the list
 
 print("Post ID:")
-print(SamplePost.id) # Print the post's ID
+print(SamplePost["id"]) # Print the post's ID
 
 print("Post URL:")
-print(SamplePost.file.url) # Print the post's media URL
+print(SamplePost["file"]["url"]) # Print the post's media URL

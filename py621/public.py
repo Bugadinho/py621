@@ -1,6 +1,5 @@
 import json
 import requests
-from munch import munchify
 
 # Custom user agent header for identification within e621
 headers = {"User-Agent":"py621/1.1 (by Bugman69 on e621)"}
@@ -105,7 +104,7 @@ def getPost(isSafe, PostID):
     eJSON = eRequest.json()
 
     # Return posts from the previously defined list
-    return munchify(eJSON["post"])
+    return eJSON["post"]
 
 # Simple function, returns a list with posts
 def getPosts(isSafe, Tags, Limit, Page, Check):
@@ -162,7 +161,7 @@ def getPosts(isSafe, Tags, Limit, Page, Check):
     eJSON = eRequest.json()
 
     # Return posts from the previously defined list
-    return munchify(eJSON["posts"])
+    return eJSON["posts"]
 
 # Simple function, returns a pool from a pool ID
 def getPool(isSafe, PoolID):
@@ -189,7 +188,7 @@ def getPool(isSafe, PoolID):
     eJSON = eRequest.json()[0]
 
     # Returns the pool
-    return munchify(eJSON)
+    return eJSON
 
 # Simple function, returns a list of posts from a specific pool ID
 def getPoolPosts(isSafe, PoolID):
@@ -204,4 +203,4 @@ def getPoolPosts(isSafe, PoolID):
         posts.append(getPost(isSafe, postID))
     
     # Return the posts list
-    return munchify(posts)
+    return posts

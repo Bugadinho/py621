@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="py621",
-    version="0.0.2",
+    version="1.2.0",
     author="Bugadinho",
     author_email="miguelriechi_windows8@outlook.com",
     description="A simple e621 API interface for Python",

@@ -4,15 +4,19 @@ A simple, easy to use, e621 API interface for Python!
 
 ## Todos
 
-- Use objects for posts and pools
+- Treat the Public API as an object, make it initialize once and be reutilized many times, mostly to prevent unnecessary repetition and to maybe make some useful stuff with the returned objects.
 
-- Expand the Public API
+- Make a way to be able to query multiple posts with a single request, as otherwise it's really slow.
 
-- Add the Private API
+- Expand the Public API with all of the features which do not require login/authentication.
 
-- Write examples
+- Add the Private API, which are the parts of the API that require login/authentication.
 
-- Write tests
+- Merge the Public with the Private API so it becomes simpler to use, treating authentication as an optional argument to initialize.
+
+- Write a wiki and documentation for the project.
+
+- Write more examples for newcomers to get a better picture of how to use the API.
 
 ## Contributors
 

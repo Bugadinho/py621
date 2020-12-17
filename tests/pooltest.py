@@ -1,7 +1,13 @@
 import py621
 
-# Get a list of unsafe posts from the pool 6527
-SamplePosts = py621.public.getPoolPosts(False, 6527)
+# Create an unsafe api instance
+api = py621.public.api(py621.types.e621)
+
+# Get a Pool object from the pool 6527
+pool = api.getPool(6527)
+
+# Get posts from the Pool object
+SamplePosts = pool.getPosts()
 
 SamplePost = SamplePosts[0] # Select the first post from the pool
 

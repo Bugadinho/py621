@@ -1,10 +1,13 @@
 import py621
 
+# Create a safe api instance
+api = py621.public.api(py621.types.e926)
 
+# Set the tags we want 
 tags = ["protogen", "anthro"]
 
-# Get a list of safe posts with the tags contained in the above list and don't check for tag validity
-SamplePosts = py621.public.getPosts(True, tags, 10, 1, False)
+# Get a list of posts with the tags contained in the above list and don't check for tag validity
+SamplePosts = api.getPosts(tags, 10, 1, False)
 
 SamplePost = SamplePosts[0] # Select the first post from the list
 

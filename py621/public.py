@@ -1,10 +1,12 @@
 import json
 import requests
 from py621 import objectify
+from py621 import types
 
 # Custom user agent header for identification within e621
-headers = {"User-Agent":"py621/1.1 (by Bugman69 on e621)"}
+headers = {"User-Agent":"py621/1.2.0 (by Bugman69 on e621)"}
 
+# HTTP Code handler
 def handleCodes(StatusCode):
     if StatusCode == 200:
         return
@@ -28,33 +30,14 @@ def handleCodes(StatusCode):
         raise ConnectionRefusedError(
             "Server connection refused! HTTP Status code: " + str(StatusCode) + " " + Codes[str(StatusCode)])
 
-def isTag(Tag):
-    # Since tags can't inherently be NSFW we will always verify tags on e621
-    RequestLink = "https://e621.net/tags.json?"
+class api:
+    def __init__(self, url):
+        self.url = url
     
-    RequestLink += "search[name_matches]="
-    RequestLink += Tag
+    def isTag(self, Tag):
+        # Since tags can't inherently be NSFW we will always verify tags on e621
+        RequestLink = self.url + "tags.json?"
 
-    # Sends the actual request
-    eRequest = requests.get(RequestLink, headers=headers)
-
-    # Verify status codes
-    handleCodes(eRequest.status_code)
-
-    # Decodes the json into a a list
-    eJSON = eRequest.json()
-
-    try:
-        # Try to access element name, this throws and error when the tag does not exist or is an alias, check for that in the except
-        if eJSON[0]["name"] == Tag:
-            return True
-        # If the tag's name isn't the tag, assume it's a fluke on e621's servers and return false
-        else:
-            return False
-    except:
-        # Redoing the request to check if it's an alias
-        RequestLink = "https://e621.net/tag_aliases.json?"
-    
         RequestLink += "search[name_matches]="
         RequestLink += Tag
 
@@ -68,140 +51,152 @@ def isTag(Tag):
         eJSON = eRequest.json()
 
         try:
-            # Try to access element name, this WILL throw and exception if it actually does not exist
-            if eJSON[0]["antecedent_name"] == Tag:
-                # Return the actual tag
-                return eJSON[0]["consequent_name"]
-            # This shouldn't ever happen, but if it does, consider yourself a special snowflake
+            # Try to access element name, this throws and error when the tag does not exist or is an alias, check for that in the except
+            if eJSON[0]["name"] == Tag:
+                return True
+            # If the tag's name isn't the tag, assume it's a fluke on e621's servers and return false
             else:
                 return False
         except:
-            # This tag really does not exist
-            return False
-
-# Simple function, gets a single post
-def getPost(isSafe, PostID):
-    RequestLink = "https://e"
-
-    # Chooses which website to use depending on the isSafe argument
-    if isSafe == True:
-        RequestLink += "926.net/"
-    else:
-        RequestLink += "621.net/"
+            # Redoing the request to check if it's an alias
+            RequestLink = "https://e621.net/tag_aliases.json?"
     
-    RequestLink += "posts/"
-
-    # Specifies the Post ID
-    RequestLink += str(PostID)
-    RequestLink += ".json"
-    
-    # Sends the actual request
-    eRequest = requests.get(RequestLink, headers=headers)
-
-    # Verify status codes
-    handleCodes(eRequest.status_code)
-
-    # Decodes the json into a a list
-    eJSON = eRequest.json()
-
-    # Return posts from the previously defined list
-    return objectify.DictProxy(eJSON["post"])
-
-# Simple function, returns a list with posts
-def getPosts(isSafe, Tags, Limit, Page, Check):
-    RequestLink = "https://e"
-
-    # Chooses which website to use depending on the isSafe argument
-    if isSafe == True:
-        RequestLink += "926.net/"
-    else:
-        RequestLink += "621.net/"
-    
-    RequestLink += "posts.json?"
-
-    # Gives a limit of posts to the api (can be used for per page limits when combined with Page)
-    RequestLink += "limit="
-    RequestLink += str(Limit)
-
-    # Specifies the page
-    RequestLink += "&page="
-    RequestLink += str(Page)
-
-
-    # Handles tag formation
-    RequestLink += "&tags="
-
-    for id, Tag in enumerate(Tags):
-        if Check == True:
-            # Check the tag, it could not exist
-            TagCheck = isTag(Tag)
-
-            if TagCheck == False:
-                # Tag does not exist, throw an error, this can help devs latter on
-                raise NameError("Tag (" + Tag + ") does not exist!")
-            elif TagCheck == True:
-                # Tag exists and isn't an alias, put it on the request
-                RequestLink += Tag
-            else:
-                # Tag is an alias, use the actual tag on the request
-                RequestLink += TagCheck
-        else:
-            # Don't bother with tag checks
+            RequestLink += "search[name_matches]="
             RequestLink += Tag
+
+            # Sends the actual request
+            eRequest = requests.get(RequestLink, headers=headers)
+
+            # Verify status codes
+            handleCodes(eRequest.status_code)
+
+            # Decodes the json into a a list
+            eJSON = eRequest.json()
+
+            try:
+                # Try to access element name, this WILL throw and exception if it actually does not exist
+                if eJSON[0]["antecedent_name"] == Tag:
+                    # Return the actual tag
+                    return eJSON[0]["consequent_name"]
+                # This shouldn't ever happen, but if it does, consider yourself a special snowflake
+                else:
+                    return False
+            except:
+                # This tag really does not exist
+                return False
+
+    # Simple function, gets a single post
+    def getPost(self, PostID):
+        RequestLink = self.url
+    
+        RequestLink += "posts/"
+
+        # Specifies the Post ID
+        RequestLink += str(PostID)
+        RequestLink += ".json"
+    
+        # Sends the actual request
+        eRequest = requests.get(RequestLink, headers=headers)
+
+        # Verify status codes
+        handleCodes(eRequest.status_code)
+
+        # Decodes the json into a a list
+        eJSON = eRequest.json()
+
+        # Return posts from the previously defined list
+        return types.ListToPost(eJSON["post"], self)
+
+    # Simple function, returns a list with posts
+    def getPosts(self, Tags, Limit, Page, Check):
+        RequestLink = self.url
+    
+        RequestLink += "posts.json?"
+
+        # Gives a limit of posts to the api (can be used for per page limits when combined with Page)
+        RequestLink += "limit="
+        RequestLink += str(Limit)
+
+        # Specifies the page
+        RequestLink += "&page="
+        RequestLink += str(Page)
+
+
+        # Handles tag formation
+        RequestLink += "&tags="
+
+        for id, Tag in enumerate(Tags):
+            if Check == True:
+                # Check the tag, it could not exist
+                TagCheck = self.isTag(Tag)
+
+                if TagCheck == False:
+                    # Tag does not exist, throw an error, this can help devs latter on
+                    raise NameError("Tag (" + Tag + ") does not exist!")
+                elif TagCheck == True:
+                    # Tag exists and isn't an alias, put it on the request
+                    RequestLink += Tag
+                else:
+                    # Tag is an alias, use the actual tag on the request
+                    RequestLink += TagCheck
+            else:
+                # Don't bother with tag checks
+                RequestLink += Tag
         
-        if id != (len(Tags) - 1):
-            RequestLink += "+"
+            if id != (len(Tags) - 1):
+                RequestLink += "+"
     
-    # Sends the actual request
-    eRequest = requests.get(RequestLink, headers=headers)
+        # Sends the actual request
+        eRequest = requests.get(RequestLink, headers=headers)
 
-    # Verify status codes
-    handleCodes(eRequest.status_code)
+        # Verify status codes
+        handleCodes(eRequest.status_code)
 
-    # Decodes the json into a a list
-    eJSON = eRequest.json()
+        # Decodes the json into a a list
+        eJSON = eRequest.json()
 
-    # Return posts from the previously defined list
-    return objectify.DictProxy(eJSON["posts"])
+        # Define a list of posts
+        Posts = []
 
-# Simple function, returns a pool from a pool ID
-def getPool(isSafe, PoolID):
-    RequestLink = "https://e"
+        # For every post on json output convert to Post object and append to list
+        for post in eJSON["posts"]:
+           Posts.append(types.ListToPost(post, self))
 
-    # Chooses which website to use depending on the isSafe argument
-    if isSafe == True:
-        RequestLink += "926.net/"
-    else:
-        RequestLink += "621.net/"
+        # Return posts from the previously defined list of Post objects
+        return Posts
+
+    # Simple function, returns a pool from a pool ID
+    def getPool(self, PoolID):
+        RequestLink = self.url
     
-    RequestLink += "pools.json?"
+        RequestLink += "pools.json?"
 
-    # Specifies the pool ID
-    RequestLink += "?&search[id]=" + str(PoolID)
+        # Specifies the pool ID
+        RequestLink += "?&search[id]=" + str(PoolID)
     
-    # Sends the actual request
-    eRequest = requests.get(RequestLink, headers=headers)
+        # Sends the actual request
+        eRequest = requests.get(RequestLink, headers=headers)
 
-    # Verify status codes
-    handleCodes(eRequest.status_code)
+        # Verify status codes
+        handleCodes(eRequest.status_code)
 
-    # Decodes the json into a a list and selects first element (the pool, if there are more, how?)
-    eJSON = eRequest.json()[0]
+        # Decodes the json into a a list and selects first element (the pool, if there are more, how?)
+        eJSON = eRequest.json()[0]
 
-    # Returns the pool
-    return objectify.DictProxy(eJSON)
+        # Returns the pool
+        return types.ListToPool(eJSON, self)
 
-# Simple function, returns a list of posts from a specific pool ID
-def getPoolPosts(isSafe, PoolID):
-    # Get ID of all posts in a pool
-    poolPosts = getPool(isSafe, PoolID)["post_ids"]
+    # Simple function, returns a list of posts from a specific pool ID
+    def getPoolPosts(self, PoolID):
+        # Get ID of all posts in a pool
+        poolPosts = self.getPool(PoolID).post_ids
 
-    # Sets posts list
-    posts = []
+        # Sets posts list
+        posts = []
 
-    for postID in poolPosts:
-        # For every post id, get a post and append it to the posts list
-        posts.append(getPost(isSafe, postID))
+        for postID in poolPosts:
+            # For every post id, get a post and append it to the posts list
+            posts.append(self.getPost(postID))
     
-    # Return the posts list
-    return objectify.DictProxy(posts) 
+        # Return the posts list
+        return posts

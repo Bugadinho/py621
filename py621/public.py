@@ -1,6 +1,5 @@
 import json
 import requests
-from py621 import objectify
 from py621 import types
 
 # Custom user agent header for identification within e621
@@ -31,8 +30,14 @@ def handleCodes(StatusCode):
             "Server connection refused! HTTP Status code: " + str(StatusCode) + " " + Codes[str(StatusCode)])
 
 class api:
-    def __init__(self, url):
+    def __init__(self, url, username = None, APIKey = None):
         self.url = url
+        
+        if APIKey != None:
+            self.authenticate = True
+            self.auth = (username, APIKey)
+        else:
+            self.authenticate = False
     
     def isTag(self, Tag):
         # Since tags can't inherently be NSFW we will always verify tags on e621
@@ -42,7 +47,10 @@ class api:
         RequestLink += Tag
 
         # Sends the actual request
-        eRequest = requests.get(RequestLink, headers=headers)
+        if self.authenticate == True:
+            eRequest = requests.get(RequestLink, headers=headers, auth=self.auth)
+        else:
+            eRequest = requests.get(RequestLink, headers=headers)
 
         # Verify status codes
         handleCodes(eRequest.status_code)
@@ -65,7 +73,10 @@ class api:
             RequestLink += Tag
 
             # Sends the actual request
-            eRequest = requests.get(RequestLink, headers=headers)
+            if self.authenticate == True:
+                eRequest = requests.get(RequestLink, headers=headers, auth=self.auth)
+            else:
+                eRequest = requests.get(RequestLink, headers=headers)
 
             # Verify status codes
             handleCodes(eRequest.status_code)
@@ -96,7 +107,10 @@ class api:
         RequestLink += ".json"
     
         # Sends the actual request
-        eRequest = requests.get(RequestLink, headers=headers)
+        if self.authenticate == True:
+            eRequest = requests.get(RequestLink, headers=headers, auth=self.auth)
+        else:
+            eRequest = requests.get(RequestLink, headers=headers)
 
         # Verify status codes
         handleCodes(eRequest.status_code)
@@ -147,7 +161,10 @@ class api:
                 RequestLink += "+"
     
         # Sends the actual request
-        eRequest = requests.get(RequestLink, headers=headers)
+        if self.authenticate == True:
+            eRequest = requests.get(RequestLink, headers=headers, auth=self.auth)
+        else:
+            eRequest = requests.get(RequestLink, headers=headers)
 
         # Verify status codes
         handleCodes(eRequest.status_code)
@@ -175,7 +192,10 @@ class api:
         RequestLink += "?&search[id]=" + str(PoolID)
     
         # Sends the actual request
-        eRequest = requests.get(RequestLink, headers=headers)
+        if self.authenticate == True:
+            eRequest = requests.get(RequestLink, headers=headers, auth=self.auth)
+        else:
+            eRequest = requests.get(RequestLink, headers=headers)
 
         # Verify status codes
         handleCodes(eRequest.status_code)

@@ -7,6 +7,15 @@ headers = {"User-Agent":"py621/1.2.0 (by Bugman69 on e621)"}
 
 # HTTP Code handler
 def handleCodes(StatusCode):
+    """[Handles HTTP Status Codes]
+
+    Args:
+        StatusCode ([int]): [Status code provided by the server]
+    
+    Raises:
+        ConnectionRefusedError: [Raised when anything but a status code of 200 is given]
+    """
+
     if StatusCode == 200:
         return
     else:
@@ -30,6 +39,13 @@ def handleCodes(StatusCode):
             "Server connection refused! HTTP Status code: " + str(StatusCode) + " " + Codes[str(StatusCode)])
 
 class api:
+    """[An API Instance]
+
+    Args:
+        url ([str]): [Uses either py621.types.e926 or py621.types.e621]
+        username ([str], optional): [If authenticating, set this to your e621 username]
+        APIKey ([str], optional): [If authenticating, set this your e621 API key]
+    """
     def __init__(self, url, username = None, APIKey = None):
         self.url = url
 
@@ -40,6 +56,15 @@ class api:
             self.authenticate = False
     
     def isTag(self, Tag):
+        """[Checks if a tag is valid]
+
+        Args:
+            Tag ([str]): [Tag to be checked]
+        
+        Returns:
+            [bool/str]: [Returns True if the tag is valid, False if it isn't, and returns a string if the tag is an alias]
+        """
+
         # Since tags can't inherently be NSFW we will always verify tags on e621
         RequestLink = self.url + "tags.json?"
 
@@ -98,6 +123,15 @@ class api:
 
     # Simple function, gets a single post
     def getPost(self, PostID):
+        """[Gets a post by it's ID]
+
+        Args:
+            PostID ([int/str]): [The ID of the post to get info about]
+        
+        Returns:
+            [Post]: [Returns a Post object]
+        """
+
         RequestLink = self.url
     
         RequestLink += "posts/"
@@ -123,6 +157,18 @@ class api:
 
     # Simple function, returns a list with posts
     def getPosts(self, Tags, Limit, Page, Check):
+        """[Get a list of posts]
+
+        Args:
+            Tags ([list]): [List of tags to use]
+            Limit ([int]): [Number of posts to return, not guaranteed to return this exact number of posts. Hard limit of 320 imposed by the site]
+            Page ([int]): [Page number to start the search from]
+            Check ([bool]): [Whether or not to check the tags for validity]
+        
+        Returns:
+            [List[Post]]: [Returns a list of Post objects]
+        """
+        
         RequestLink = self.url
     
         RequestLink += "posts.json?"
@@ -184,6 +230,15 @@ class api:
 
     # Simple function, returns a pool from a pool ID
     def getPool(self, PoolID):
+        """[Gets a Pool by its ID]
+
+        Args:
+            PoolID ([str/int]): [The ID of the pool to get]
+        
+        Returns:
+            [Pool]: [Returns a Pool object]
+        """
+
         RequestLink = self.url
     
         RequestLink += "pools.json?"
@@ -208,6 +263,15 @@ class api:
 
     # Simple function, returns a list of posts from a specific pool ID
     def getPoolPosts(self, PoolID):
+        """[Gets IDs of posts in a pool]
+
+        Args:
+            PoolID ([str/int]): [The ID of the pool to get the posts from]
+        
+        Returns:
+            [List]: [List of Post objects]
+        """
+
         # Get ID of all posts in a pool
         poolPosts = self.getPool(PoolID).post_ids
 

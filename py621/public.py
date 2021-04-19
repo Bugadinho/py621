@@ -32,7 +32,7 @@ def handleCodes(StatusCode):
 class api:
     def __init__(self, url, username = None, APIKey = None):
         self.url = url
-        
+
         if APIKey != None:
             self.authenticate = True
             self.auth = (username, APIKey)
@@ -145,7 +145,7 @@ class api:
                 TagCheck = self.isTag(Tag)
 
                 if TagCheck == False:
-                    # Tag does not exist, throw an error, this can help devs latter on
+                    # Tag does not exist, throw an error, this can help devs later on
                     raise NameError("Tag (" + Tag + ") does not exist!")
                 elif TagCheck == True:
                     # Tag exists and isn't an alias, put it on the request

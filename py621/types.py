@@ -95,6 +95,7 @@ def ListToPost(List, api):
     ThisPost.tags.invalid = List["tags"]["invalid"]
     ThisPost.tags.lore = List["tags"]["lore"]
     ThisPost.tags.meta = List["tags"]["meta"]
+    ThisPost.tags.copyright = List["tags"]["copyright"]
 
     ThisPost.locked_tags = List["locked_tags"]
     ThisPost.change_seq = List["change_seq"]
